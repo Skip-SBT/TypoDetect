@@ -1,0 +1,99 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  # ── 1. Build the Python sdist + wheel ──────────────────────────────────────
+  build-package:
+    name: Build Python package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # required by setuptools-scm to read git tags
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install build frontend
+        run: pip install build
+
+      - name: Build sdist and wheel
+        run: python -m build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: python-package
+          path: dist/
+
+  # ── 2. Build the Windows standalone executable ─────────────────────────────
+  build-exe:
+    name: Build Windows executable
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install package and PyInstaller
+        run: pip install pyinstaller .
+
+      - name: Build executable
+        run: pyinstaller --noconsole --onefile typodetect/name_guard.py --name typodetect
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-exe
+          path: dist/typodetect.exe
+
+  # ── 3. Publish to PyPI via OIDC trusted publishing ─────────────────────────
+  publish-pypi:
+    name: Publish to PyPI
+    needs: build-package
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/typodetect
+    permissions:
+      id-token: write  # required for OIDC trusted publishing
+    steps:
+      - uses: actions/download-artifact@v4.1.8
+        with:
+          name: python-package
+          path: dist/
+
+      - uses: pypa/gh-action-pypi-publish@release/v1
+
+  # ── 4. Create the GitHub Release and attach all artifacts ──────────────────
+  create-release:
+    name: Create GitHub Release
+    needs: [build-package, build-exe]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4.1.8
+        with:
+          name: python-package
+          path: dist/
+
+      - uses: actions/download-artifact@v4.1.8
+        with:
+          name: windows-exe
+          path: dist/
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true

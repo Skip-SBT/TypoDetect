@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools>=68.0", "wheel"]
+requires = ["setuptools>=68.0", "setuptools-scm>=8.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "typodetect"
-version = "1.0.0"
+dynamic = ["version"]
 description = "A lightweight background tool that detects when you mistype a specific word and gives you a visual warning."
 readme = "README.md"
 license = {text = "MIT"}
@@ -47,3 +47,8 @@ typodetect-gui = "typodetect.name_guard:main"
 
 [tool.setuptools.packages.find]
 include = ["typodetect*"]
+
+[tool.setuptools_scm]
+# Writes the version derived from the git tag into typodetect/_version.py at
+# build time so the installed package always reports the correct version.
+write_to = "typodetect/_version.py"

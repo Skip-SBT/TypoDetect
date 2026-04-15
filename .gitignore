@@ -29,3 +29,6 @@ Thumbs.db
 
 # Logs
 *.log
+
+# setuptools-scm generated version file
+typodetect/_version.py

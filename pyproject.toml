@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "typodetect"
+version = "1.0.0"
+description = "A lightweight background tool that detects when you mistype a specific word and gives you a visual warning."
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [
+    { name = "Skip-SBT" },
+]
+keywords = ["typo", "detection", "keyboard", "tray", "monitoring"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Win32 (MS Windows)",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Utilities",
+]
+dependencies = [
+    "keyboard>=0.13.5",
+    "rapidfuzz>=3.0.0",
+    "pynput>=1.7.6",
+    "pystray>=0.19.4",
+    "Pillow>=10.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/Skip-SBT/TypoDetect"
+Repository = "https://github.com/Skip-SBT/TypoDetect"
+Issues = "https://github.com/Skip-SBT/TypoDetect/issues"
+
+[project.scripts]
+typodetect = "typodetect.name_guard:main"
+
+[project.gui-scripts]
+typodetect-gui = "typodetect.name_guard:main"
+
+[tool.setuptools.packages.find]
+include = ["typodetect*"]
